@@ -68,6 +68,7 @@ export const AchievementCommentList: FC = () => {
         commentableType="achievement.comment"
         onDeleteSuccess={reloadComments}
         onSubmitSuccess={reloadComments}
+        draftKey={`comment-achievement-${commentableId}`}
       />
     </div>
   );

@@ -14,7 +14,7 @@ interface CommentListProps {
   commentableId: number;
   commentableType: App.Community.Enums.CommentableType;
   comments: App.Community.Data.Comment[];
-
+  draftKey?: string | null;
   onDeleteSuccess?: () => void;
   onSubmitSuccess?: () => void;
   targetUserDisplayName?: string;
@@ -25,6 +25,7 @@ export const CommentList: FC<CommentListProps> = ({
   commentableId,
   commentableType,
   comments,
+  draftKey,
   onDeleteSuccess,
   onSubmitSuccess,
   targetUserDisplayName,
@@ -39,6 +40,7 @@ export const CommentList: FC<CommentListProps> = ({
       canComment={canComment}
       commentableId={commentableId}
       commentableType={commentableType}
+      draftKey={draftKey}
       onDeleteSuccess={onDeleteSuccess}
       onSubmitSuccess={onSubmitSuccess}
       targetUserDisplayName={targetUserDisplayName}

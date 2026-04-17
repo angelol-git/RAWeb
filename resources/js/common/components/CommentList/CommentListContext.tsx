@@ -5,6 +5,7 @@ interface CommentListContextValue {
   canComment: boolean;
   commentableId: number;
   commentableType: App.Community.Enums.CommentableType;
+  draftKey?: string | null;
 
   onDeleteSuccess?: () => void;
   onSubmitSuccess?: () => void;

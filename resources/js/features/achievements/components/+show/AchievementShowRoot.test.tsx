@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { route } from 'ziggy-js';
 
-import { act, render, screen, waitFor } from '@/test';
+import { createAuthenticatedUser } from '@/common/models';
+import { act, fireEvent, render, screen, waitFor } from '@/test';
 import {
   createAchievement,
   createComment,
@@ -890,5 +891,56 @@ describe('Component: AchievementShowRoot', () => {
     });
 
     expect(router.reload).not.toHaveBeenCalled();
+  });
+
+  it('given there is a unsubmitted comment draft, it persists when unmounting before the draft debounce', async () => {
+    // ARRANGE
+    vi.useFakeTimers();
+
+    const achievement = createAchievement({
+      game: createGame({ playersTotal: 1000, system: createSystem() }),
+      unlocksTotal: 250,
+      unlocksHardcore: 150,
+    });
+    const draftKey = `comment-achievement-${achievement.id}`;
+
+    const pageProps = {
+      auth: { user: createAuthenticatedUser() },
+      achievement,
+      backingGame: null,
+      gameAchievementSet: null,
+      can: { createAchievementComments: true },
+      isSubscribedToComments: false,
+      initialTab: 'comments',
+      numComments: 0,
+      recentVisibleComments: [],
+    };
+
+    const { unmount } = render(<AchievementShowRoot />, {
+      pageProps: {
+        ...pageProps,
+      },
+    });
+
+    // ACT
+    fireEvent.input(screen.getByRole('textbox'), { target: { value: 'draft comment' } });
+
+    act(() => {
+      vi.advanceTimersByTime(499);
+    });
+
+    unmount();
+
+    render(<AchievementShowRoot />, {
+      pageProps: {
+        ...pageProps,
+      },
+    });
+
+    // ASSERT  
+    expect(sessionStorage.getItem(draftKey)).toEqual(JSON.stringify({ body: 'draft comment' }));
+    expect(screen.getByRole('textbox')).toHaveValue('draft comment');
+
+    vi.useRealTimers();
   });
 });
